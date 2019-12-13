@@ -134,12 +134,12 @@ defmodule Wild.Tokenizer do
 
       # A dash at the end of the class should be treated literally
       defp normalize_class([{_prev, unquote(dash), nil} | tail], acc) do
-        normalize_class(tail, [?- | acc])
+        normalize_class(tail, [unquote(dash) | acc])
       end
 
       # A range, expand it and and each member
       defp normalize_class([{range_start, unquote(dash), range_end} | tail], acc) do
-        normalize_class(tail, Enum.to_list(range_start..range_end) ++ acc)
+        normalize_class(tail, range_to_list(range_start, range_end) ++ acc)
       end
 
       # A non-special byte

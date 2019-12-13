@@ -16,7 +16,7 @@ defmodule Generators do
 
   def input() do
     frequency([
-      # {9, text()},
+      {9, text()},
       {1, string()}
     ])
   end

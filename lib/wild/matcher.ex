@@ -14,7 +14,7 @@ defmodule Wild.Matcher do
     quote do
       alias Wild.LookupTable
 
-      def match?(subject, pattern) do
+      def match?(subject, pattern, _opts) do
         tokenized_subject = tokenize_subject(subject)
         tokenized_pattern = tokenize_pattern(pattern)
 

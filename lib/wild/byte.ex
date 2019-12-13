@@ -9,4 +9,8 @@ defmodule Wild.Byte do
   @dash ?-
 
   def split(string), do: :binary.bin_to_list(string)
+
+  def range_to_list(range_start, range_end) do
+    Enum.to_list(range_start..range_end)
+  end
 end

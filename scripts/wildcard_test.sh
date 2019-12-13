@@ -6,8 +6,24 @@
 ## Example Usage:
 ##  ./wildcard_test.sh "foobar" "fooba*"
 
-subject=${1?No subject} pattern=${2?No pattern}
+subject=${1?No subject}
+pattern=${2?No pattern}
+option=$3
+
+print() {
+  message=$1
+  if [[ $option == "-v" ]]; then
+    echo "[Bash] $message"
+  fi
+}
+
+print "subject: $subject"
+echo -n "$subject" | od -An -tuC | xargs
+
+print "pattern: $pattern"
+echo -n "$pattern" | od -An -tuC | xargs
+
 case $subject in
-  ($pattern) echo "match"; true;;
-  (*)        echo "no match"; false;;
+  ($pattern) print "match"; true;;
+  (*)        print "no match"; false;;
 esac

@@ -143,3 +143,12 @@ This looks like an actual bug: I think the input should be interpreted literally
     stacktrace:
       (propcheck) lib/properties.ex:206: PropCheck.Properties.handle_check_results/4
       test/wild/byte_test.exs:105: (test)
+
+1) property match - property tests should act the same as bash implementation (Wild.CodepointTest)
+    test/wild/codepoint_test.exs:105
+    Property Elixir.Wild.CodepointTest.property match - property tests should act the same as bash implementation() failed. Counter-Example is:
+    [{<<1, 92>>, "?\\"}]
+
+    Consider running `MIX_ENV=test mix propcheck.clean` if a bug in a generator was
+    identified and fixed. PropCheck cannot identify changes to generators. See
+    https://github.com/alfert/propcheck/issues/30 for more details.
