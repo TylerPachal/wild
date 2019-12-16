@@ -47,6 +47,10 @@ defmodule Wild.CodepointTest do
       assert ["a", "*", "b", class, {:special, "?"}, "\\", "9"] = output
       assert class == MapSet.new(["1", "2", "3"])
     end
+
+    test "keeps order of incomplete classes (which get turned to literals)" do
+      assert ["a", "[", "b", "c"] == Codepoint.tokenize_pattern("a[bc")
+    end
   end
 
   describe "match - unit tests" do

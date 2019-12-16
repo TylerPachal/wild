@@ -60,17 +60,7 @@ Edit: Having these for all tests was silly, using it just on the one test.
 
 
 
-1) property should act the same as bash implementation (WildTest)
-     test/wild_test.exs:53
-     Property Elixir.WildTest.property should act the same as bash implementation() failed. Counter-Example is:
-     [{<<98, 0, 97, 97>>, "b?a*"}]
-
-     Counter example stored.
-
-     code: nil
-     stacktrace:
-       (propcheck) lib/properties.ex:206: PropCheck.Properties.handle_check_results/4
-       test/wild_test.exs:53: (test)
+{<<98, 0, 97, 97>>, "b?a*"}
 
 Initial: I added some `echo` statements to my bash test script and it shows that only the first character of the input binary is being interpreted.  In this case 98 is actually "b", but nothing shows after that.  The 0 value is null so I wonder if that has something to do with it.
 
@@ -78,77 +68,34 @@ Turns out the null character is not allowed in filenames so I guess it is not su
 
 
 
+{"[a", "[a"}
 
-1) property should act the same as bash implementation (WildTest)
-     test/wild_test.exs:59
-     Property Elixir.WildTest.property should act the same as bash implementation() failed. Counter-Example is:
-     [{<<2, 1, 40>>, <<2, 63, 40>>}]
+For effeciency I am always adding tokens to the beginning of their respective accumulators (regular tokens and class tokens).  This failing property exposed a place where I had forgotten that my tokens are reversed at the end, and was creating the "proper order" too early (because it would be reversed at the very end in the base case).
 
-     Counter example stored.
 
-     code: nil
-     stacktrace:
-       (propcheck) lib/properties.ex:206: PropCheck.Properties.handle_check_results/4
-       test/wild_test.exs:59: (test)
+
+{<<2, 1, 40>>, <<2, 63, 40>>}
 
 Some more low-ascii-value bytes.  Asking a question on StackExchange to make sure my bash-tester-script works appropriately.
 
 
 
 
-1) property should act the same as bash implementation (WildTest)
-     test/wild_test.exs:59
-     Property Elixir.WildTest.property should act the same as bash implementation() failed. Counter-Example is:
-     [{"\\", "\\"}]
-
-     Counter example stored.
-
-     code: nil
-     stacktrace:
-       (propcheck) lib/properties.ex:206: PropCheck.Properties.handle_check_results/4
-       test/wild_test.exs:59: (test)
+{"\\", "\\"}
 
 This looks like an actual bug: I think the input should be interpreted literally while the pattern can be escaped?
 
 
 
 
-1) property should act the same as bash implementation (WildTest)
-     test/wild_test.exs:53
-     Property Elixir.WildTest.property should act the same as bash implementation() failed with an error: {:error, :cant_generate}
-     code: nil
-     stacktrace:
-       (propcheck) lib/properties.ex:185: PropCheck.Properties.handle_check_results/4
-       test/wild_test.exs:53: (test)
+{<<1, 92>>, "?\\"}
 
 
-1) property should act the same as bash implementation (WildTest)
-     test/wild_test.exs:21
-     Property Elixir.WildTest.property should act the same as bash implementation() failed. Counter-Example is:
-     [{"v", "[-g----]?l ub"}]
-
-     Consider running `MIX_ENV=test mix propcheck.clean` if a bug in a generator was
-     identified and fixed. PropCheck cannot identify changes to generators. See
-     https://github.com/alfert/propcheck/issues/30 for more details.
 
 
-1) property match - property tests should act the same as bash implementation (Wild.ByteTest)
-    test/wild/byte_test.exs:105
-    Property Elixir.Wild.ByteTest.property match - property tests should act the same as bash implementation() failed. Counter-Example is:
-    [{"\r", "!c[t][so-d]]e"}]
 
-    Counter example stored.
+Fixed along the way?
 
-    code: nil
-    stacktrace:
-      (propcheck) lib/properties.ex:206: PropCheck.Properties.handle_check_results/4
-      test/wild/byte_test.exs:105: (test)
+{"v", "[-g----]?l ub"}
 
-1) property match - property tests should act the same as bash implementation (Wild.CodepointTest)
-    test/wild/codepoint_test.exs:105
-    Property Elixir.Wild.CodepointTest.property match - property tests should act the same as bash implementation() failed. Counter-Example is:
-    [{<<1, 92>>, "?\\"}]
-
-    Consider running `MIX_ENV=test mix propcheck.clean` if a bug in a generator was
-    identified and fixed. PropCheck cannot identify changes to generators. See
-    https://github.com/alfert/propcheck/issues/30 for more details.
+{"\r", "!c[t][so-d]]e"}

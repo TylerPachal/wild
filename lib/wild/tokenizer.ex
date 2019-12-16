@@ -48,7 +48,7 @@ defmodule Wild.Tokenizer do
         acc =
           case class do
             nil -> acc
-            not_actually_a_class -> [unquote(left_square_bracket) | not_actually_a_class] ++ acc
+            not_actually_a_class -> not_actually_a_class ++ [unquote(left_square_bracket) | acc]
           end
 
         # We have been appending to the head of the accumulated list the whole time

@@ -1,4 +1,4 @@
-#! /bin/sh -
+#!/bin/bash
 
 ## Created for development/testing
 ## https://unix.stackexchange.com/questions/556368/writing-a-glob-match-testing-function#556371
@@ -10,20 +10,35 @@ subject=${1?No subject}
 pattern=${2?No pattern}
 option=$3
 
-print() {
-  message=$1
-  if [[ $option == "-v" ]]; then
-    echo "[Bash] $message"
-  fi
-}
+if [[ $option == "-v" ]]; then
+  echo "subject: $subject"
+  echo -n $subject | od -An -tuC | xargs
 
-print "subject: $subject"
-echo -n "$subject" | od -An -tuC | xargs
+  echo "pattern: $pattern"
+  echo -n $pattern | od -An -tuC | xargs
+fi
 
-print "pattern: $pattern"
-echo -n "$pattern" | od -An -tuC | xargs
+# Make a new directory for this file to live under /tmp/wild
+dir="/tmp/wild/$(uuidgen)"
+mkdir -p $dir
 
-case $subject in
-  ($pattern) print "match"; true;;
-  (*)        print "no match"; false;;
-esac
+# Switch to fresh directory
+pushd $dir > /dev/null
+
+# Create the file
+touch $subject
+
+# List files using wild card and count the results
+hits=$(ls $pattern -R 2>/dev/null | wc -l)
+
+# Go back to original directory
+popd > /dev/null
+
+# Make sure the result is equal to one
+if [ $hits == 1 ]; then
+  echo "match"
+  true
+else
+  echo "no match"
+  false
+fi
