@@ -15,16 +15,22 @@ defmodule Wild.Matcher do
       alias Wild.LookupTable
 
       def match?(subject, pattern, opts \\ []) do
-        verbose = Keyword.get(opts, :verbose)
+        on_pattern_error = Keyword.get(opts, :on_pattern_error) || :fail
 
-        tokenized_subject = tokenize_subject(subject)
-        tokenized_pattern = tokenize_pattern(pattern)
-
-        if verbose do
-          IO.inspect(tokenized_subject, label: "Subject")
-          IO.inspect(tokenized_pattern, label: "Pattern")
+        case {tokenize_pattern(pattern), on_pattern_error} do
+          {{:error, _}, :fail} ->
+            false
+          {{:error, _} = tuple, :return} ->
+            tuple
+          {{:error, error_message}, :raise} ->
+            raise error_message
+          {{:ok, tokenized_pattern}, _} ->
+            tokenized_subject = tokenize_subject(subject)
+            process(tokenized_subject, tokenized_pattern)
         end
+      end
 
+      defp process(tokenized_subject, tokenized_pattern) do
         subject_length = Enum.count(tokenized_subject)
         pattern_length = Enum.count(tokenized_pattern)
 

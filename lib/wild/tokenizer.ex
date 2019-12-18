@@ -16,6 +16,7 @@ defmodule Wild.Tokenizer do
 
     quote do
       @special_tokens [unquote(question_mark), unquote(asterisk)]
+      @escabale_tokens [unquote(backslash) | @special_tokens]
 
       def tokenize_subject(subject) do
         split(subject)
@@ -63,13 +64,19 @@ defmodule Wild.Tokenizer do
         # We have been appending to the head of the accumulated list the whole time
         # but we need to keep the original order, so we must reverse the
         # accumulated list.
-        Enum.reverse(acc)
+        {:ok, Enum.reverse(acc)}
       end
 
-      # Not in a class - A special token preceeded by a backslash should be treated
-      # literally
-      defp do_tokenize_pattern([{unquote(backslash), next_token}, _special_token | tail], acc, class = nil) when next_token in @special_tokens do
+      # Not in a class - An escapable token preceeded by a backslash should be
+      # treated literally
+      defp do_tokenize_pattern([{unquote(backslash), next_token}, _token | tail], acc, class = nil) when next_token in @escabale_tokens do
         do_tokenize_pattern(tail, [next_token | acc], class)
+      end
+
+      # If the backslash token is not preceeding an escapable character then
+      # this pattern is invalid
+      defp do_tokenize_pattern([{unquote(backslash), _next_token} | _tail], _acc, class = nil) do
+        {:error, :invalid_escape_sequence}
       end
 
       # Not in a class - A special token not being escaped should be treated

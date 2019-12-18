@@ -9,12 +9,19 @@ defmodule Generators do
   # Future TODO: Support these custom ranges
   # @special_ranges ["[:alnum:]", "[:space:]", "[:digit:]"]
 
-  def input_and_pattern() do
+  def byte_input_and_pattern() do
     let input <- input() do
       let pattern <- pattern(input) do
         {input, pattern}
       end
     end
+  end
+
+  def codepoint_input_and_pattern() do
+    such_that(
+      {_i, p} <- byte_input_and_pattern(),
+      when: String.length(p) == byte_size(p)
+    )
   end
 
   def input() do

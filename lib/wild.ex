@@ -25,18 +25,15 @@ defmodule Wild do
       what is considered a single match for the ? wildcard.  Options are
       `:codepoint` (default), `:byte`, and `:bash`.
 
+    * `:on_pattern_error` - What to do when the pattern is invalid.  The
+    default is `:fail` which is simliar to case statements in Bash where an
+    invalid pattern won't match the subject.  Other options are `:raise` and
+    `:return` which `raise` an error or return an `{:error, error}` tuple
+    respectively.
+
     * `:verbose` - Enable verbose mode, mainly useful when paired with
-      `mode: :base`.Defaults to false.
+      `mode: :base`.  Defaults to false.
   """
-  def match?(subject, pattern, opts \\ [])
-  def match?("", "", _opts) do
-    # Empty pattern can only match empty subject
-    true
-  end
-  def match?(_subject, "", _opts) do
-    # Empty pattern can only match empty subject
-    false
-  end
   def match?(subject, pattern, opts) do
     case Keyword.get(opts, :mode) do
       :byte -> Byte.match?(subject, pattern, opts)

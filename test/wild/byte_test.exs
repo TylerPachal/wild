@@ -20,31 +20,31 @@ defmodule Wild.ByteTest do
 
   describe "tokenize_pattern" do
     test "escapes special characters that are preceeded by a backslash (92)" do
-      assert [42] == Byte.tokenize_pattern(<<92, 42>>)
+      assert {:ok, [42]} == Byte.tokenize_pattern(<<92, 42>>)
     end
 
     test "passes special characters through literally when they are not escaped" do
-      assert [{:special, 42}] == Byte.tokenize_pattern(<<42>>)
+      assert {:ok, [{:special, 42}]} == Byte.tokenize_pattern(<<42>>)
     end
 
     test "basic class" do
-      assert [?a, class, ?d] = Byte.tokenize_pattern("a[bc]d")
+      assert {:ok, [?a, class, ?d]} = Byte.tokenize_pattern("a[bc]d")
       assert class == MapSet.new([?b, ?c])
     end
 
     test "class with special characters" do
-      assert [MapSet.new([?-, ?], ?a, ?*])] == Byte.tokenize_pattern("[]a*-]")
+      assert {:ok, [MapSet.new([?-, ?], ?a, ?*])]} == Byte.tokenize_pattern("[]a*-]")
     end
 
     test "class with range" do
-      assert [MapSet.new([?a, ?b, ?c, ?d])] == Byte.tokenize_pattern("[a-d]")
+      assert {:ok, [MapSet.new([?a, ?b, ?c, ?d])]} == Byte.tokenize_pattern("[a-d]")
     end
 
     test "literals, escaped special charcters, and a class" do
-      input = ~S"a\*b[1-3]?\9"
-      output = Byte.tokenize_pattern(input)
+      input = ~S"a\*b[1-3]?9"
+      {:ok, output} = Byte.tokenize_pattern(input)
 
-      assert [?a, ?*, ?b, class, {:special, ??}, ?\\, ?9] = output
+      assert [?a, ?*, ?b, class, {:special, ??}, ?9] = output
       assert class == MapSet.new([?1, ?2, ?3])
     end
   end
@@ -92,19 +92,19 @@ defmodule Wild.ByteTest do
   describe "match - property tests" do
     property "star should always match anything" do
       forall input <- Generators.input() do
-        assert true == Wild.match?(input, "*")
+        assert true == Byte.match?(input, "*")
       end
     end
 
     property "question mark should always match strings that one characters long" do
       forall input <- Generators.string(1) do
-        assert true == Wild.match?(input, "?")
+        assert true == Byte.match?(input, "?")
       end
     end
 
     property "should act the same as bash implementation" do
-      forall {input, pattern} <- Generators.input_and_pattern() do
-        assert Bash.match?(input, pattern) == Wild.match?(input, pattern)
+      forall {input, pattern} <- Generators.byte_input_and_pattern() do
+        assert Bash.match?(input, pattern) == Byte.match?(input, pattern)
       end
     end
   end
