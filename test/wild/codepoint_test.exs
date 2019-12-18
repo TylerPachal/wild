@@ -106,7 +106,7 @@ defmodule Wild.CodepointTest do
       end
     end
 
-    property "should act the same as bash implementation", numtests: 1_000 do
+    property "should act the same as bash implementation" do
       forall {input, pattern} <- Generators.input_and_pattern() do
         assert Bash.match?(input, pattern) == Wild.match?(input, pattern)
       end

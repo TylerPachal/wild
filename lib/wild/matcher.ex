@@ -14,9 +14,16 @@ defmodule Wild.Matcher do
     quote do
       alias Wild.LookupTable
 
-      def match?(subject, pattern, _opts \\ []) do
+      def match?(subject, pattern, opts \\ []) do
+        verbose = Keyword.get(opts, :verbose)
+
         tokenized_subject = tokenize_subject(subject)
         tokenized_pattern = tokenize_pattern(pattern)
+
+        if verbose do
+          IO.inspect(tokenized_subject, label: "Subject")
+          IO.inspect(tokenized_pattern, label: "Pattern")
+        end
 
         subject_length = Enum.count(tokenized_subject)
         pattern_length = Enum.count(tokenized_pattern)

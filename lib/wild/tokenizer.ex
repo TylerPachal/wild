@@ -15,19 +15,19 @@ defmodule Wild.Tokenizer do
     dash = Module.get_attribute(__CALLER__.module, :dash)
 
     quote do
-      @special_bytes [unquote(question_mark), unquote(asterisk)]
+      @special_tokens [unquote(question_mark), unquote(asterisk)]
 
       def tokenize_subject(subject) do
         split(subject)
       end
 
       def tokenize_pattern(pattern) do
-        bytes = split(pattern)
+        tokens = split(pattern)
 
         # Zipping the list with an offset copy of itself so when we are iterating
-        # we can see the next byte.  This is helpful for when we run into a
+        # we can see the next token.  This is helpful for when we run into a
         # backslash and need to know if it is escaping a special character.
-        all_pairs = Enum.zip([nil | bytes], bytes ++ [nil])
+        all_pairs = Enum.zip([nil | tokens], tokens ++ [nil])
         [_head | pairs] = all_pairs
         accumulated = []
         class = nil
@@ -44,11 +44,20 @@ defmodule Wild.Tokenizer do
       defp do_tokenize_pattern([], acc, class) do
         # If the class is non-nil that means that the most recent open bracket we
         # encountered was never closed, and it should be interpreted literally,
-        # along with everything we thought would be a class.
+        # along with everything we thought would be a class.  Any special
+        # characters in the not-class also need to be converted to special.
         acc =
           case class do
-            nil -> acc
-            not_actually_a_class -> not_actually_a_class ++ [unquote(left_square_bracket) | acc]
+            nil ->
+              acc
+
+            not_actually_a_class ->
+              tokens =
+                Enum.map(not_actually_a_class, fn
+                  t when t in @special_tokens -> {:special, t}
+                  t -> t
+                end)
+              tokens ++ [unquote(left_square_bracket) | acc]
           end
 
         # We have been appending to the head of the accumulated list the whole time
@@ -57,36 +66,36 @@ defmodule Wild.Tokenizer do
         Enum.reverse(acc)
       end
 
-      # Not in a class - A special byte preceeded by a backslash should be treated
+      # Not in a class - A special token preceeded by a backslash should be treated
       # literally
-      defp do_tokenize_pattern([{unquote(backslash), next_byte}, _special_byte | tail], acc, class = nil) when next_byte in @special_bytes do
-        do_tokenize_pattern(tail, [next_byte | acc], class)
+      defp do_tokenize_pattern([{unquote(backslash), next_token}, _special_token | tail], acc, class = nil) when next_token in @special_tokens do
+        do_tokenize_pattern(tail, [next_token | acc], class)
       end
 
-      # Not in a class - A special byte not being escaped should be treated
+      # Not in a class - A special token not being escaped should be treated
       # with special characteristics
-      defp do_tokenize_pattern([{special_byte, _next_byte} | tail], acc, class = nil) when special_byte in @special_bytes do
-        do_tokenize_pattern(tail, [{:special, special_byte} | acc], class)
+      defp do_tokenize_pattern([{special_token, _next_token} | tail], acc, class = nil) when special_token in @special_tokens do
+        do_tokenize_pattern(tail, [{:special, special_token} | acc], class)
       end
 
       # Starting a new class
-      defp do_tokenize_pattern([{unquote(left_square_bracket), _next_byte} | tail], acc, _class = nil) do
+      defp do_tokenize_pattern([{unquote(left_square_bracket), _next_token} | tail], acc, _class = nil) do
         do_tokenize_pattern(tail, acc, [])
       end
 
-      # Not in a class - A non-special byte
-      defp do_tokenize_pattern([{byte, _next_byte} | tail], acc, class = nil) do
-        do_tokenize_pattern(tail, [byte | acc], class)
+      # Not in a class - A non-special token
+      defp do_tokenize_pattern([{token, _next_token} | tail], acc, class = nil) do
+        do_tokenize_pattern(tail, [token | acc], class)
       end
 
       # In a class - The closing bracket may be part of a class if it is the first
       # member of the class
-      defp do_tokenize_pattern([{unquote(right_square_bracket), _next_byte} | tail], acc, _class = []) do
+      defp do_tokenize_pattern([{unquote(right_square_bracket), _next_token} | tail], acc, _class = []) do
         do_tokenize_pattern(tail, acc, [unquote(right_square_bracket)])
       end
 
       # Ending the current class
-      defp do_tokenize_pattern([{unquote(right_square_bracket), _next_byte} | tail], acc, class) when is_list(class) do
+      defp do_tokenize_pattern([{unquote(right_square_bracket), _next_token} | tail], acc, class) when is_list(class) do
         class =
           class
           |> Enum.reverse()
@@ -95,21 +104,21 @@ defmodule Wild.Tokenizer do
         do_tokenize_pattern(tail, [class | acc], nil)
       end
 
-      # In a class - Regular byte
-      defp do_tokenize_pattern([{byte, _next_byte} | tail], acc, class) when is_list(class) do
-        do_tokenize_pattern(tail, acc, [byte | class])
+      # In a class - Regular token
+      defp do_tokenize_pattern([{token, _next_token} | tail], acc, class) when is_list(class) do
+        do_tokenize_pattern(tail, acc, [token | class])
       end
 
 
-      # During the tokenization we build up classes as list of bytes.  We transform
-      # these lists into MapSets for performance while taking care to also respect
-      # classes that contain ranges of bytes.
+      # During the tokenization we build up classes as list of tokens.
+      # We transform these lists into MapSets for performance while taking care
+      # to also respect classes that contain ranges of tokens.
       #
-      # Expects that the bytes are in their original order (only really matters for
-      # ranges though)
+      # Expects that the tokens are in their original order (only
+      # really matters for ranges though)
       defp normalize_class(class) do
         # Zipping the list with a negative and positive offset of itself so we can
-        # iterate and have a copy of the leadign and trailing byte.
+        # iterate and have a copy of the leading and trailing token.
         all_zipped =
           Enum.zip([nil, nil | class], [nil | class])
           |> Enum.zip(class ++ [nil])
@@ -142,9 +151,9 @@ defmodule Wild.Tokenizer do
         normalize_class(tail, range_to_list(range_start, range_end) ++ acc)
       end
 
-      # A non-special byte
-      defp normalize_class([{_prev, byte, _next} | tail], acc) do
-        normalize_class(tail, [byte | acc])
+      # A non-special token
+      defp normalize_class([{_prev, token, _next} | tail], acc) do
+        normalize_class(tail, [token | acc])
       end
     end
   end

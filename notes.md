@@ -74,9 +74,21 @@ For effeciency I am always adding tokens to the beginning of their respective ac
 
 
 
+{"bagb[g", "bagb[*"}
+
+Exposed an error with my tokenizer.  The asterisk was being interpreted as a literal since it appears after an open square bracket (and we thought it would be part of a class).  However since the open square bracket was never closed, it is not actually a class.
+
+
+
 {<<2, 1, 40>>, <<2, 63, 40>>}
 
 Some more low-ascii-value bytes.  Asking a question on StackExchange to make sure my bash-tester-script works appropriately.
+
+
+
+:binary.list_to_bin(value)
+
+Switched a lot of to_string function to :binary.list_to_bin because with our properties we are dealing with a lot of binaries that are not valid strings.  Example: [<<228>>, "*"]
 
 
 

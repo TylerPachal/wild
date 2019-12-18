@@ -6,6 +6,9 @@ defmodule Generators do
   @wildcards ["?", "*"]
   @special_characters ["[", "]"] ++ @wildcards
 
+  # Future TODO: Support these custom ranges
+  # @special_ranges ["[:alnum:]", "[:space:]", "[:digit:]"]
+
   def input_and_pattern() do
     let input <- input() do
       let pattern <- pattern(input) do
@@ -37,9 +40,9 @@ defmodule Generators do
       {5, oneof(@special_characters)},  # Special wildcard characters
       {1, ?\n},                         # Linebreaks
       {1, oneof([?., ?-, ?!, ??, ?,])}, # Punctuation
-      {1, range(0, 9)}                  # Numbers
+      {1, range(?0, ?9)}                # Numbers
     ])) do
-      to_string(value)
+      :binary.list_to_bin(value)
     end
   end
 
@@ -56,7 +59,7 @@ defmodule Generators do
         end
       end)
 
-    to_string(replaced)
+    :binary.list_to_bin(replaced)
   end
 
   # Generating random binaries are great but for now I am going to constrain
@@ -66,11 +69,10 @@ defmodule Generators do
   # Also adding a check for the null character because that is not supported
   # by glob matching
   def string() do
-    such_that(b <- binary(), when: String.valid?(b) && :binary.match(b, <<0>>) == :nomatch)
-    # such_that(b <- binary(), when: :binary.match(b, <<0>>) == :nomatch)
+    such_that(b <- binary(), when: :binary.match(b, <<0>>) == :nomatch)
   end
   def string(length) do
-    such_that(b <- binary(length), when: String.valid?(b) && :binary.match(b, <<0>>) == :nomatch)
+    such_that(b <- binary(length), when: :binary.match(b, <<0>>) == :nomatch)
   end
 
   def text() do
@@ -80,9 +82,9 @@ defmodule Generators do
       {5, oneof(@special_characters)},  # Special wildcard characters
       {1, ?\n},                         # Linebreaks
       {1, oneof([?., ?-, ?!, ??, ?,])}, # Punctuation
-      {1, range(0, 9)}                  # Numbers
+      {1, range(?0, ?9)}                # Numbers
     ])) do
-      to_string(value)
+      :binary.list_to_bin(value)
     end
   end
 
@@ -91,13 +93,14 @@ defmodule Generators do
   def random_class() do
     let value <- list(frequency([
       {80, range(?a, ?z)},              # Letters
+      # {20, oneof(@special_ranges)},     # Special ranges
       {20, ?-},                         # Dash to produce ranges
       {5, oneof(@special_characters)},  # Special wildcard characters
       {1, ?\s},                         # Whitespace
       {1, ?\n},                         # Linebreaks
-      {1, range(0, 9)}                  # Numbers
+      {1, range(?0, ?9)}                # Numbers
     ])) do
-      "[" <> to_string(value) <> "]"
+      "[" <> :binary.list_to_bin(value) <> "]"
     end
   end
 end
