@@ -1,4 +1,6 @@
 defmodule Wild.Byte do
+  @moduledoc false
+
   use Wild.Matcher
 
   @question_mark ??

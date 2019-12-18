@@ -1,4 +1,5 @@
 defmodule Wild.Bash do
+  @moduledoc false
 
   def match?(string, pattern, opts \\ []) do
     flags =

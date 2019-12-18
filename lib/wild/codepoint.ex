@@ -1,4 +1,6 @@
 defmodule Wild.Codepoint do
+  @moduledoc false
+
   use Wild.Matcher
 
   @question_mark "?"

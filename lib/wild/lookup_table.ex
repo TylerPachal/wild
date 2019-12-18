@@ -1,4 +1,5 @@
 defmodule Wild.LookupTable do
+  @moduledoc false
 
   def create(string_length, pattern_length) do
     rows = string_length
