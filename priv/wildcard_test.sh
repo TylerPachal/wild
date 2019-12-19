@@ -1,7 +1,6 @@
 #! /bin/bash
 
 ## Created for development/testing
-## https://unix.stackexchange.com/questions/556368/writing-a-glob-match-testing-function#556371
 ##
 ## Example Usage:
 ##  ./wildcard_test.sh "foobar" "fooba*"

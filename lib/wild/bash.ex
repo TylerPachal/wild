@@ -11,8 +11,8 @@ defmodule Wild.Bash do
     command = [string, pattern] ++ flags
 
     {output, return} =
-      System.cwd()
-      |> Path.join("./scripts/wildcard_test.sh")
+      :code.priv_dir(:wild)
+      |> Path.join("wildcard_test.sh")
       |> System.cmd(command)
 
     if Keyword.get(opts, :verbose) do

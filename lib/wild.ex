@@ -9,7 +9,7 @@ defmodule Wild do
 
   @doc """
   Executes a unix-style WildCard match on a string with a given pattern.  By
-  default it runs on Codepoints but can also be set to Binary mode.
+  default it tokenizes and runs on Codepoints but can also be set to Byte mode.
 
   It supports all of the usual wildcard pattern mechanisms:
     - `*` matches none or many tokens
