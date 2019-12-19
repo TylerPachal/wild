@@ -1,21 +1,37 @@
 # Wild
 
-**TODO: Add description**
+Wild is a wildcard matching library that aims to mimic unix-style pattern matching functionality in Elixir.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `wild` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:wild, "~> 0.1.0"}
+    {:wild, "~> 1.0.0-rc.1"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/wild](https://hexdocs.pm/wild).
+## Examples
+
+```elixir
+iex> Wild.match?("foobar", "foo*")
+true
+
+iex> Wild.match?("foobar", "fo[a-z]bar")
+true
+
+iex> Wild.match?(<<9, 97, 98>>, "?ab")
+true
+
+iex> Wild.match?("foobar", "bar*")
+false
+
+iex> Wild.match?(<<16, 196, 130, 4>>, "????", mode: :byte)
+true
+```
+
+---
+
+More information can be found in the [documentation](https://hexdocs.pm/).
 
