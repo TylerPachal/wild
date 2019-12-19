@@ -40,5 +40,5 @@ true
 
 ---
 
-More information can be found in the [documentation](https://hexdocs.pm/).
+More information can be found in the [documentation](https://hexdocs.pm/wild/Wild.html).
 

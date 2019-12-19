@@ -1,6 +1,8 @@
 defmodule Wild.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/TylerPachal/wild"
+
   def project do
     [
       app: :wild,
@@ -8,7 +10,9 @@ defmodule Wild.MixProject do
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      package: package()
+      package: package(),
+      source_url: @source_url,
+      homepage_url: "https://hexdocs.pm/wild/Wild.html"
     ]
   end
 
@@ -29,7 +33,7 @@ defmodule Wild.MixProject do
       files: ["priv", "lib", "config", "mix.exs", "README*"],
       maintainers: ["Tyler Pachal"],
       licenses: ["MIT"],
-      links: %{github: "https://github.com/TylerPachal/wild"}
+      links: %{github: @source_url}
     ]
   end
 end
