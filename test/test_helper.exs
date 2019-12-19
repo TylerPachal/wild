@@ -19,8 +19,8 @@ defmodule Generators do
 
   def codepoint_input_and_pattern() do
     such_that(
-      {_i, p} <- byte_input_and_pattern(),
-      when: String.length(p) == byte_size(p)
+      {i, p} <- byte_input_and_pattern(),
+      when: String.length(i) == byte_size(i) && String.length(p) == byte_size(p)
     )
   end
 
