@@ -83,8 +83,7 @@ defmodule Wild.Matcher do
         fill_table_exact_match(table, subject_index, pattern_index, iterations)
       end
       defp fill_table(table, [{subject_char, subject_index, class, pattern_index} | iterations]) when is_map(class) do
-        # Class case
-        if MapSet.member?(class, subject_char) do
+        if matches_class?(class, subject_char) do
           fill_table_exact_match(table, subject_index, pattern_index, iterations)
         else
           fill_table(table, iterations)
@@ -98,6 +97,14 @@ defmodule Wild.Matcher do
         value = LookupTable.get(table, subject_index, pattern_index)
         table = LookupTable.set(table, subject_index + 1, pattern_index + 1, value)
         fill_table(table, iterations)
+      end
+
+      defp matches_class?(class, token) do
+        case {MapSet.member?(class, token), MapSet.member?(class, :negated)} do
+          {true, false} -> true
+          {false, true} -> true
+          _ -> false
+        end
       end
     end
   end

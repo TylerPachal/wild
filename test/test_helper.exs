@@ -60,7 +60,7 @@ defmodule Generators do
       |> String.codepoints()
       |> Enum.map(fn char ->
         if Enum.random(0..9) >= 8 do
-          Enum.random(["?", "*"])
+          Enum.random(["?", "*", "[!abc]"])
         else
           char
         end
@@ -107,7 +107,12 @@ defmodule Generators do
       {1, ?\n},                         # Linebreaks
       {1, range(?0, ?9)}                # Numbers
     ])) do
-      "[" <> :binary.list_to_bin(value) <> "]"
+      let negation <- frequency([
+        {4, ""},
+        {1, "!"}
+      ]) do
+        "[" <> negation <> :binary.list_to_bin(value) <> "]"
+      end
     end
   end
 end

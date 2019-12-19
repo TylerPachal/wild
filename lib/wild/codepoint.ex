@@ -9,6 +9,7 @@ defmodule Wild.Codepoint do
   @left_square_bracket "["
   @right_square_bracket "]"
   @dash "-"
+  @exclamation_mark "!"
 
   def split(string), do: String.codepoints(string)
 

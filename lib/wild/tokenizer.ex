@@ -14,6 +14,7 @@ defmodule Wild.Tokenizer do
     left_square_bracket = Module.get_attribute(__CALLER__.module, :left_square_bracket)
     right_square_bracket = Module.get_attribute(__CALLER__.module, :right_square_bracket)
     dash = Module.get_attribute(__CALLER__.module, :dash)
+    exclamation_mark = Module.get_attribute(__CALLER__.module, :exclamation_mark)
 
     quote do
       @special_tokens [unquote(question_mark), unquote(asterisk)]
@@ -125,6 +126,15 @@ defmodule Wild.Tokenizer do
       # Expects that the tokens are in their original order (only
       # really matters for ranges though)
       defp normalize_class(class) do
+        # Check if the class is negated
+        {map_set, class} =
+          case class do
+            [unquote(exclamation_mark) | tail] ->
+              {MapSet.new([:negated]), tail}
+            _ ->
+              {MapSet.new(), class}
+          end
+
         # Zipping the list with a negative and positive offset of itself so we can
         # iterate and have a copy of the leading and trailing token.
         all_zipped =
@@ -136,7 +146,7 @@ defmodule Wild.Tokenizer do
 
         zipped
         |> normalize_class([])
-        |> MapSet.new()
+        |> Enum.into(map_set)
       end
 
       # Base case - turn list into MapSet
