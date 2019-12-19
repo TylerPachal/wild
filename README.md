@@ -1,8 +1,15 @@
 # Wild
 
-Wild is a wildcard matching library that aims to mimic unix-style pattern matching functionality in Elixir.
+![](https://github.com/TylerPachal/wild/workflows/Elixir%20CI/badge.svg)
+
+Wild is a wildcard matching library that aims to mimic unix-style pattern
+matching functionality in Elixir.  It works on all binary input and defaults
+to working with codepoint representations of binaries, but other modes are
+available as well.
 
 ## Installation
+
+Add the `:wild` dependency to your `mix.exs` file:
 
 ```elixir
 def deps do
