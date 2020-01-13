@@ -1,14 +1,13 @@
 defmodule Wild do
   @moduledoc """
-  Wild is a wildcard matching library that aims to mimic unix-style pattern
-  matching functionality in Elixir.  It works on all binary input and defaults to working with
-  codepoint representations of binaries, but other modes are available as well.
+  Provides the interface to underlying wildcard implementations via the public
+  `match/2` and `match/3` functions.
   """
   alias Wild.{Bash, Byte, Codepoint}
   require Logger
 
   @doc """
-  Executes a unix-style Wildcard pattern match on a string with a given
+  Executes a unix-style wildcard pattern match on a string with a given
   pattern.  By default it tokenizes and runs on Codepoints but can also be set
   to Byte mode.
 
@@ -56,7 +55,7 @@ defmodule Wild do
       ```
 
       If you are dealing with user input from forms this is likely not
-      something you will encounter and can stick with the default value of
+      something you will encounter and can keep the default value of
       `:codepoint`.
 
     * `:on_pattern_error` - What to do when the pattern is invalid.  The

@@ -1,11 +1,12 @@
 # Wild
 
-![](https://github.com/TylerPachal/wild/workflows/Elixir%20CI/badge.svg)
+![Build Status](https://github.com/TylerPachal/wild/workflows/Elixir%20CI/badge.svg)
+![Hex.pm version](https://img.shields.io/hexpm/v/wild.svg)
 
-Wild is a wildcard matching library that aims to mimic unix-style pattern
-matching functionality in Elixir.  It works on all binary input and defaults
-to working with codepoint representations of binaries, but other modes are
-available as well.
+Wild is a wildcard matching library that mimics unix-style pattern matching
+functionality in Elixir; it does not interact with the file system.  It works
+on all binary input and defaults to working with codepoint representations of
+binaries, but other modes are also available.
 
 ## Installation
 
@@ -19,26 +20,22 @@ def deps do
 end
 ```
 
-## Examples
+## Example Usage
 
 ```elixir
+# Simple match
 iex> Wild.match?("foobar", "foo*")
 true
 
-iex> Wild.match?("foobar", "fo[a-z]bar")
-true
-
-iex> Wild.match?(<<9, 97, 98>>, "?ab")
-true
-
+# Simple non-match
 iex> Wild.match?("foobar", "bar*")
 false
 
+# Classes are supported
+iex> Wild.match?("foobar", "fo[a-z]bar")
+true
+
+# Non-printable binaries can be matched in byte mode
 iex> Wild.match?(<<16, 196, 130, 4>>, "????", mode: :byte)
 true
 ```
-
----
-
-More information can be found in the [documentation](https://hexdocs.pm/wild/Wild.html).
-

@@ -10,9 +10,15 @@ defmodule Wild.MixProject do
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+
+      # Hex
       package: package(),
+      description: description(),
+
+      # Docs
+      name: "Wild",
+      docs: docs(),
       source_url: @source_url,
-      homepage_url: "https://hexdocs.pm/wild/Wild.html"
     ]
   end
 
@@ -29,11 +35,24 @@ defmodule Wild.MixProject do
 
   defp package do
     [
-      description: "Wild is a wildcard matching library that aims to mimic unix-style pattern matching functionality in Elixir",
+      description: description(),
       files: ["priv", "lib", "config", "mix.exs", "README*"],
       maintainers: ["Tyler Pachal"],
       licenses: ["MIT"],
       links: %{github: @source_url}
     ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"],
+      source_url: @source_url,
+      extra_section: "Overview"
+    ]
+  end
+
+  defp description do
+    "Wild is a wildcard matching library that mimics unix-style pattern matching functionality in Elixir"
   end
 end
