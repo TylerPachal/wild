@@ -104,7 +104,7 @@ defmodule Wild do
       iex> Wild.valid_pattern?("fo[a-z]b?r")
       true
 
-      iex> Wild.valid_pattern?("\\a")
+      iex> Wild.valid_pattern?(<<?\\, ?a>>)
       false
   """
   @spec valid_pattern?(binary()) :: boolean()

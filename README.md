@@ -38,4 +38,8 @@ true
 # Non-printable binaries can be matched in byte mode
 iex> Wild.match?(<<16, 196, 130, 4>>, "????", mode: :byte)
 true
+
+# Check validity of pattern
+iex> Wild.valid_pattern?("fo[a-z]b?r")
+true
 ```
