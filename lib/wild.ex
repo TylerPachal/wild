@@ -47,10 +47,10 @@ defmodule Wild do
       The distinction is important for subject and patterns like the following,
       where the binary is represented by two bytes but only one codepoint:
       ```
-      iex> Wild.match?("ā", "[!abc]", mode: :codepoint)
+      iex> Wild.match?("ā", "?", mode: :codepoint)
       true
 
-      iex> Wild.match?("ā", "[!abc]", mode: :byte)
+      iex> Wild.match?("ā", "?", mode: :byte)
       false
       ```
 
