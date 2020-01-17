@@ -2,7 +2,7 @@ defmodule Wild.ByteTest do
   use ExUnit.Case, async: true
   use PropCheck
 
-  alias Wild.{Bash, Byte}
+  alias Wild.{Bash, Byte, Generators}
 
   describe "tokenize_subject" do
     test "works with printable characters" do

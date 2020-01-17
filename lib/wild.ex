@@ -1,7 +1,14 @@
 defmodule Wild do
   @moduledoc """
-  Provides the interface to underlying wildcard implementations via the public
-  `match/2` and `match/3` functions.
+  Provides the interface to underlying wildcard implementations.
+
+  The `match?/3` and `valid_pattern?/1` functions support all of the usual
+  wildcard pattern mechanisms:
+    - `*` matches none or many tokens
+    - `?` matches exactly one token
+    - `[abc]` matches a set of tokens
+    - `[a-z]` matches a range of tokens
+    - `[!...]` matches anything but a set of tokens
   """
   alias Wild.{Bash, Byte, Codepoint}
   require Logger
@@ -10,13 +17,6 @@ defmodule Wild do
   Executes a unix-style wildcard pattern match on a string with a given
   pattern.  By default it tokenizes and runs on Codepoints but can also be set
   to Byte mode.
-
-  It supports all of the usual wildcard pattern mechanisms:
-    - `*` matches none or many tokens
-    - `?` matches exactly one token
-    - `[abc]` matches a set of tokens
-    - `[a-z]` matches a range of tokens
-    - `[!...]` matches anything but a set of tokens
 
   ## Examples
 
@@ -91,13 +91,6 @@ defmodule Wild do
   @doc """
   Checks if the given pattern is a valid unix-style wildcard pattern.  The most
   common invalid patterns arise because of invalid escape sequences.
-
-  It supports all of the usual wildcard pattern mechanisms:
-    - `*` matches none or many tokens
-    - `?` matches exactly one token
-    - `[abc]` matches a set of tokens
-    - `[a-z]` matches a range of tokens
-    - `[!...]` matches anything but a set of tokens
 
   ## Examples
 

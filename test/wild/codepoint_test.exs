@@ -2,7 +2,7 @@ defmodule Wild.CodepointTest do
   use ExUnit.Case, async: true
   use PropCheck
 
-  alias Wild.{Bash, Codepoint}
+  alias Wild.{Bash, Codepoint, Generators}
 
   describe "tokenize_subject" do
     test "works with printable characters" do
