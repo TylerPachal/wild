@@ -41,8 +41,8 @@ defmodule Wild.CodepointTest do
     end
 
     test "literals, escaped special charcters, and a class" do
-      input = ~S"a\*b[1-3]?9"
-      {:ok, output} = Codepoint.tokenize_pattern(input)
+      subject = ~S"a\*b[1-3]?9"
+      {:ok, output} = Codepoint.tokenize_pattern(subject)
 
       assert ["a", "*", "b", class, {:special, "?"}, "9"] = output
       assert class == MapSet.new(["1", "2", "3"])
@@ -54,6 +54,10 @@ defmodule Wild.CodepointTest do
 
     test "returns error for invalid escape sequence" do
       assert {:error, :invalid_escape_sequence} == Codepoint.tokenize_pattern("\\")
+    end
+
+    test "returns error for invalid class" do
+      assert {:error, :invalid_class} == Codepoint.tokenize_pattern("[!]")
     end
   end
 
@@ -76,6 +80,10 @@ defmodule Wild.CodepointTest do
 
     test "class with range" do
       assert true == Codepoint.match?("foobar", "fooba[a-zA-Z]")
+    end
+
+    test "empty class is treated literally" do
+      assert true == Codepoint.match?("[]", "[]")
     end
 
     # http://man7.org/linux/man-pages/man7/glob.7.html
@@ -103,20 +111,20 @@ defmodule Wild.CodepointTest do
 
   describe "match - property tests" do
     property "star should always match anything" do
-      forall input <- Generators.input() do
-        assert true == Codepoint.match?(input, "*")
+      forall subject <- Generators.subject() do
+        assert true == Codepoint.match?(subject, "*")
       end
     end
 
     property "question mark should always match strings that one characters long" do
-      forall input <- Generators.string(1) do
-        assert true == Codepoint.match?(input, "?")
+      forall subject <- Generators.string(1) do
+        assert true == Codepoint.match?(subject, "?")
       end
     end
 
     property "should act the same as bash implementation" do
-      forall {input, pattern} <- Generators.codepoint_input_and_pattern() do
-        assert Bash.match?(input, pattern) == Codepoint.match?(input, pattern)
+      forall {subject, pattern} <- Generators.codepoint_subject_and_pattern() do
+        assert Bash.match?(subject, pattern) == Codepoint.match?(subject, pattern)
       end
     end
   end

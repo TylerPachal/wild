@@ -41,8 +41,8 @@ defmodule Wild.ByteTest do
     end
 
     test "literals, escaped special charcters, and a class" do
-      input = ~S"a\*b[1-3]?9"
-      {:ok, output} = Byte.tokenize_pattern(input)
+      subject = ~S"a\*b[1-3]?9"
+      {:ok, output} = Byte.tokenize_pattern(subject)
 
       assert [?a, ?*, ?b, class, {:special, ??}, ?9] = output
       assert class == MapSet.new([?1, ?2, ?3])
@@ -91,20 +91,20 @@ defmodule Wild.ByteTest do
 
   describe "match - property tests" do
     property "star should always match anything" do
-      forall input <- Generators.input() do
-        assert true == Byte.match?(input, "*")
+      forall subject <- Generators.subject() do
+        assert true == Byte.match?(subject, "*")
       end
     end
 
     property "question mark should always match strings that one characters long" do
-      forall input <- Generators.string(1) do
-        assert true == Byte.match?(input, "?")
+      forall subject <- Generators.string(1) do
+        assert true == Byte.match?(subject, "?")
       end
     end
 
     property "should act the same as bash implementation" do
-      forall {input, pattern} <- Generators.byte_input_and_pattern() do
-        assert Bash.match?(input, pattern) == Byte.match?(input, pattern)
+      forall {subject, pattern} <- Generators.byte_subject_and_pattern() do
+        assert Bash.match?(subject, pattern) == Byte.match?(subject, pattern)
       end
     end
   end
