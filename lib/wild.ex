@@ -45,7 +45,7 @@ defmodule Wild do
       * `:bash` - Using an underlying bash script.  Only for debugging
 
       The distinction is important for subject and patterns like the following,
-      where the binary is represented by two but only one codepoints:
+      where the binary is represented by two bytes but only one codepoint:
       ```
       iex> Wild.match?("ā", "[!abc]", mode: :codepoint)
       true
@@ -56,8 +56,7 @@ defmodule Wild do
 
       The `:codepoint` mode uses `String.codepoints/1` for tokenization, while
       the `:byte` mode uses `:binary.bin_to_list/1`.  If we tokenize our `"ā"`
-      subject from earlier we can see the two functions produce a different
-      amount of tokens:
+      subject we can see the two functions produce different amounts of tokens:
       ```
       iex> String.codepoints("ā")
       ["ā"]
