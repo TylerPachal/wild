@@ -9,31 +9,37 @@ defmodule Generators do
   # Future TODO: Support these custom ranges
   # @special_ranges ["[:alnum:]", "[:space:]", "[:digit:]"]
 
-  def byte_input_and_pattern() do
-    let input <- input() do
-      let pattern <- pattern(input) do
-        {input, pattern}
+  def byte_subject_and_pattern() do
+    let subject <- subject() do
+      let pattern <- pattern(subject) do
+        {subject, pattern}
       end
     end
   end
 
-  def codepoint_input_and_pattern() do
+  def codepoint_subject_and_pattern() do
     such_that(
-      {i, p} <- byte_input_and_pattern(),
+      {i, p} <- byte_subject_and_pattern(),
       when: String.length(i) == byte_size(i) && String.length(p) == byte_size(p)
     )
   end
 
-  def input() do
+  def subject() do
     frequency([
       {9, text()},
       {1, string()}
     ])
   end
 
-  def pattern(input) do
+  def pattern() do
+    let subject <- subject() do
+      pattern(subject)
+    end
+  end
+
+  def pattern(subject) do
     frequency([
-      {1, pattern_with_wildcards(input)},
+      {1, pattern_with_wildcards(subject)},
       {1, random_pattern()}
     ])
   end
@@ -46,6 +52,7 @@ defmodule Generators do
       {10, ?\s},                        # Whitespace
       {5, oneof(@special_characters)},  # Special wildcard characters
       {1, ?\n},                         # Linebreaks
+      {1, ?\\},                         # Escape something (maybe)
       {1, oneof([?., ?-, ?!, ??, ?,])}, # Punctuation
       {1, range(?0, ?9)}                # Numbers
     ])) do
@@ -53,10 +60,10 @@ defmodule Generators do
     end
   end
 
-  # Take the input and replace some of the characters with wildcards
-  def pattern_with_wildcards(input) do
+  # Take the subject and replace some of the characters with wildcards
+  def pattern_with_wildcards(subject) do
     replaced =
-      input
+      subject
       |> String.codepoints()
       |> Enum.map(fn char ->
         if Enum.random(0..9) >= 8 do
@@ -69,11 +76,7 @@ defmodule Generators do
     :binary.list_to_bin(replaced)
   end
 
-  # Generating random binaries are great but for now I am going to constrain
-  # them to being valid strings.  I am doing this because I cannot write my
-  # pattern_with_wildcards function properly to deal with binaries and
-  # strings.
-  # Also adding a check for the null character because that is not supported
+  # Adding a check for the null character because that is not supported
   # by glob matching
   def string() do
     such_that(b <- binary(), when: :binary.match(b, <<0>>) == :nomatch)

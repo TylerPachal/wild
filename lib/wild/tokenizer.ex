@@ -77,7 +77,7 @@ defmodule Wild.Tokenizer do
 
       # If the backslash token is not preceeding an escapable character then
       # this pattern is invalid
-      defp do_tokenize_pattern([{unquote(backslash), _next_token} | _tail], _acc, class = nil) do
+      defp do_tokenize_pattern([{unquote(backslash), _next_token} | _tail], _acc, _class) do
         {:error, :invalid_escape_sequence}
       end
 
@@ -101,6 +101,11 @@ defmodule Wild.Tokenizer do
       # member of the class
       defp do_tokenize_pattern([{unquote(right_square_bracket), _next_token} | tail], acc, _class = []) do
         do_tokenize_pattern(tail, acc, [unquote(right_square_bracket)])
+      end
+
+      # Ending the current class - if it only contains a negation then it is invalid
+      defp do_tokenize_pattern([{unquote(right_square_bracket), _next_token} | tail], acc, ["!"]) do
+        {:error, :invalid_class}
       end
 
       # Ending the current class
