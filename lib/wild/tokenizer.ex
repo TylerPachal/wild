@@ -110,12 +110,17 @@ defmodule Wild.Tokenizer do
 
       # Ending the current class
       defp do_tokenize_pattern([{unquote(right_square_bracket), _next_token} | tail], acc, class) when is_list(class) do
-        class =
+        normalized_class_result =
           class
           |> Enum.reverse()
           |> normalize_class()
 
-        do_tokenize_pattern(tail, [class | acc], nil)
+        case normalized_class_result do
+          {:ok, normalized_class} ->
+            do_tokenize_pattern(tail, [normalized_class | acc], nil)
+          error ->
+            error
+        end
       end
 
       # In a class - Regular token
@@ -128,8 +133,8 @@ defmodule Wild.Tokenizer do
       # We transform these lists into MapSets for performance while taking care
       # to also respect classes that contain ranges of tokens.
       #
-      # Expects that the tokens are in their original order (only
-      # really matters for ranges though)
+      # Expects that the tokens are in the original order that they appeared
+      # in the pattern so that ranges and negated classes will work properly.
       defp normalize_class(class) do
         # Check if the class is negated
         {map_set, class} =
@@ -142,41 +147,45 @@ defmodule Wild.Tokenizer do
 
         # Zipping the list with a negative and positive offset of itself so we can
         # iterate and have a copy of the leading and trailing token.
-        all_zipped =
+        zipped =
           Enum.zip([nil, nil | class], [nil | class])
           |> Enum.zip(class ++ [nil])
           |> Enum.map(fn {{prev, cur}, next} -> {prev, cur, next} end)
+          |> Enum.drop(1)
 
-        [_ | zipped] = all_zipped
-
-        zipped
-        |> normalize_class([])
-        |> Enum.into(map_set)
+        case do_normalize_class(zipped, []) do
+          {:ok, normalized} -> {:ok, Enum.into(normalized, map_set)}
+          {:error, _} -> {:error, :invalid_class}
+        end
       end
 
       # Base case - turn list into MapSet
-      defp normalize_class([], acc) do
-        MapSet.new(acc)
+      defp do_normalize_class([], acc) do
+        {:ok, MapSet.new(acc)}
       end
 
       # A dash at the start of the class should be treated literally
-      defp normalize_class([{nil, unquote(dash), _next} | tail], acc) do
-        normalize_class(tail, [unquote(dash) | acc])
+      defp do_normalize_class([{nil, unquote(dash), _next} | tail], acc) do
+        do_normalize_class(tail, [unquote(dash) | acc])
       end
 
       # A dash at the end of the class should be treated literally
-      defp normalize_class([{_prev, unquote(dash), nil} | tail], acc) do
-        normalize_class(tail, [unquote(dash) | acc])
+      defp do_normalize_class([{_prev, unquote(dash), nil} | tail], acc) do
+        do_normalize_class(tail, [unquote(dash) | acc])
       end
 
       # A range, expand it and and each member
-      defp normalize_class([{range_start, unquote(dash), range_end} | tail], acc) do
-        normalize_class(tail, range_to_list(range_start, range_end) ++ acc)
+      defp do_normalize_class([{range_start, unquote(dash), range_end} | tail], acc) when range_start <= range_end do
+        do_normalize_class(tail, range_to_list(range_start, range_end) ++ acc)
+      end
+      # An invalid range, the start needs to be less-than-or-equal-to the end
+      defp do_normalize_class([{_range_start, unquote(dash), _range_end} | _tail], _acc) do
+        {:error, :invalid_range}
       end
 
       # A non-special token
-      defp normalize_class([{_prev, token, _next} | tail], acc) do
-        normalize_class(tail, [token | acc])
+      defp do_normalize_class([{_prev, token, _next} | tail], acc) do
+        do_normalize_class(tail, [token | acc])
       end
     end
   end
