@@ -133,8 +133,8 @@ defmodule Wild.Tokenizer do
       # We transform these lists into MapSets for performance while taking care
       # to also respect classes that contain ranges of tokens.
       #
-      # Expects that the tokens are in their original order (only
-      # really matters for ranges though)
+      # Expects that the tokens are in the original order that they appeared
+      # in the pattern so that ranges and negated classes will work properly.
       defp normalize_class(class) do
         # Check if the class is negated
         {map_set, class} =
@@ -147,16 +147,15 @@ defmodule Wild.Tokenizer do
 
         # Zipping the list with a negative and positive offset of itself so we can
         # iterate and have a copy of the leading and trailing token.
-        all_zipped =
+        zipped =
           Enum.zip([nil, nil | class], [nil | class])
           |> Enum.zip(class ++ [nil])
           |> Enum.map(fn {{prev, cur}, next} -> {prev, cur, next} end)
-
-        [_ | zipped] = all_zipped
+          |> Enum.drop(1)
 
         case do_normalize_class(zipped, []) do
           {:ok, normalized} -> {:ok, Enum.into(normalized, map_set)}
-          error -> error
+          {:error, _} -> {:error, :invalid_class}
         end
       end
 
@@ -181,7 +180,7 @@ defmodule Wild.Tokenizer do
       end
       # An invalid range, the start needs to be less-than-or-equal-to the end
       defp do_normalize_class([{_range_start, unquote(dash), _range_end} | _tail], _acc) do
-        {:error, :invalid_class}
+        {:error, :invalid_range}
       end
 
       # A non-special token
