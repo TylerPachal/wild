@@ -58,6 +58,7 @@ defmodule Wild.CodepointTest do
 
     test "returns error for invalid class" do
       assert {:error, :invalid_class} == Codepoint.tokenize_pattern("[!]")
+      assert {:error, :invalid_class} == Codepoint.tokenize_pattern("[a--]")
     end
   end
 
