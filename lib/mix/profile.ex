@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Profile do
 
       mix profile
   """
-  @shortdoc "Profiles one function using ExProf (to compare two functions' speed use Race)"
+  @shortdoc "Profiles one function using ExProf"
 
   use Mix.Task
   import ExProf.Macro
