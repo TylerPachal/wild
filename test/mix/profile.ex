@@ -1,10 +1,10 @@
 defmodule Mix.Tasks.Profile do
   @moduledoc """
-  Profiles one function using ExProf.
+  Profiles one function using ExProf.  Only for testing purposes.
 
   Example usage:
 
-      mix profile
+      MIX_ENV=test mix profile
   """
   @shortdoc "Profiles one function using ExProf"
 
