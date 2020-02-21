@@ -81,10 +81,11 @@ defmodule Wild do
   @spec match?(binary(), binary()) :: boolean()
   @spec match?(binary(), binary(), keyword()) :: boolean() | {:error, String.t()}
   def match?(subject, pattern, opts \\ []) do
+    opts = Keyword.put_new(opts, :mode, :codepoint)
     case Keyword.get(opts, :mode) do
       :bash -> Bash.match?(subject, pattern, opts)
       :byte -> Byte.match?(subject, pattern, opts)
-      _ -> Codepoint.match?(subject, pattern, opts)
+      :codepoint -> Codepoint.match?(subject, pattern, opts)
     end
   end
 

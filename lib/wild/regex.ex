@@ -1,9 +1,10 @@
 defmodule Wild.Regex do
 
-  def match?(subject, pattern, opts \\ []) do
+  def match?(subject, pattern, opts) do
+    mode = Keyword.fetch!(opts, :mode)
     on_pattern_error = Keyword.get(opts, :on_pattern_error) || :fail
 
-    case {compile_pattern(pattern), on_pattern_error} do
+    case {compile_pattern(pattern, mode), on_pattern_error} do
       {{:ok, regex}, _} ->
         Regex.match?(regex, subject)
       {{:error, _}, :fail} ->
@@ -15,15 +16,9 @@ defmodule Wild.Regex do
     end
   end
 
-  def compile_pattern(pattern) do
+  def compile_pattern(pattern, mode) do
     # Escaped
     pattern = Regex.escape(pattern)
-
-    # Replace wildcards
-    pattern =
-      pattern
-      |> String.replace("\\*", ".*")
-      |> String.replace("\\?", ".")
 
     # Replace class-related tokens
     # Note: It is valid to have an open bracket with no closing bracket, the
@@ -38,12 +33,23 @@ defmodule Wild.Regex do
           "[" <> rest <> "]"
       end)
 
-    pattern = String.replace(pattern, "\\-", "-")
+    pattern =
+      pattern
+      |> String.replace("\\*", ".*")
+      |> String.replace("\\?", ".")
+      |> String.replace("\\\\", "\\")
+      |> String.replace("\\-", "-")
 
     # Anchor
     pattern = "^" <> pattern <> "$"
 
+    modifiers =
+      case mode do
+        :codepoint -> "su"
+        :byte -> "s"
+      end
+
     # Compile and return
-    Regex.compile(pattern, "s")
+    Regex.compile(pattern, modifiers)
   end
 end
