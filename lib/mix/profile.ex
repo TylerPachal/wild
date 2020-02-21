@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Profile do
   end
 
   defp do_work() do
-    Wild.Regex.match?("subject", "pattern")
+    Wild.match?("subject", "pattern")
   end
 
 end
