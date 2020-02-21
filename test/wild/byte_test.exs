@@ -47,6 +47,11 @@ defmodule Wild.ByteTest do
       assert [?a, ?*, ?b, class, {:special, ??}, ?9] = output
       assert class == MapSet.new([?1, ?2, ?3])
     end
+
+    test "returns error for invalid class" do
+      assert {:error, :invalid_class} == Byte.tokenize_pattern("[!]")
+      assert {:error, :invalid_class} == Byte.tokenize_pattern("[a--]")
+    end
   end
 
   describe "match - unit tests" do

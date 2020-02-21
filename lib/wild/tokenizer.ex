@@ -104,7 +104,7 @@ defmodule Wild.Tokenizer do
       end
 
       # Ending the current class - if it only contains a negation then it is invalid
-      defp do_tokenize_pattern([{unquote(right_square_bracket), _next_token} | tail], acc, ["!"]) do
+      defp do_tokenize_pattern([{unquote(right_square_bracket), _next_token} | tail], acc, [unquote(exclamation_mark)]) do
         {:error, :invalid_class}
       end
 
@@ -127,7 +127,6 @@ defmodule Wild.Tokenizer do
       defp do_tokenize_pattern([{token, _next_token} | tail], acc, class) when is_list(class) do
         do_tokenize_pattern(tail, acc, [token | class])
       end
-
 
       # During the tokenization we build up classes as list of tokens.
       # We transform these lists into MapSets for performance while taking care
