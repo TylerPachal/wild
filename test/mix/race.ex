@@ -18,8 +18,8 @@ defmodule Mix.Tasks.Race do
       "wild" => fn ->
         Enum.each(list, fn {s, p} -> Wild.match?(s, p) end)
       end,
-      "bash" => fn ->
-        Enum.each(list, fn {s, p} -> Wild.match?(s, p, mode: :bash) end)
+      "regex" => fn ->
+        Enum.each(list, fn {s, p} -> Wild.Regex.match?(s, p, mode: :bash) end)
       end
     })
   end

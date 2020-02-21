@@ -12,11 +12,7 @@ defmodule Mix.Tasks.Profile do
   import ExProf.Macro
 
   def run(_args) do
-    profile do: do_work()
-  end
-
-  defp do_work() do
-    Wild.match?("subject", "pattern")
+    profile do: Wild.Codepoint.tokenize_pattern("patt[abc]er[ee]n")
   end
 
 end
