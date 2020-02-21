@@ -17,7 +17,7 @@ defmodule Wild.RegexTest do
       assert {:ok, ~r/^a[^b][^c]$/s} == Regex.compile_pattern("a[!b][!c]")
       assert {:ok, ~r/^a[\]b][^c]$/s} == Regex.compile_pattern("a[]b][!c]")
       assert {:ok, ~r/^[\[abc]$/s} == Regex.compile_pattern("[[abc]")
-      assert {:ok, ~r/^b[bbca\[\!abc]f$/s} == Regex.compile_pattern("b[bbca[!abc]f")
+      assert {:ok, ~r/^b[bbca\[!abc]f$/s} == Regex.compile_pattern("b[bbca[!abc]f")
     end
   end
 

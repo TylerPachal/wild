@@ -16,11 +16,8 @@ defmodule Wild.Regex do
   end
 
   def compile_pattern(pattern) do
-    IO.inspect(pattern, label: :raw)
-
     # Escaped
     pattern = Regex.escape(pattern)
-    IO.inspect(pattern, label: :escaped)
 
     # Replace wildcards
     pattern =
@@ -28,27 +25,23 @@ defmodule Wild.Regex do
       |> String.replace("\\*", ".*")
       |> String.replace("\\?", ".")
 
-    IO.inspect(pattern, label: :replaced_wildcards)
-
     # Replace class-related tokens
     # Note: It is valid to have an open bracket with no closing bracket, the
     # open bracket will be treated literally in that case.
     # Note: A closing bracket should be treated literally if it is the first
     # member of a class.
-    pattern = Regex.replace(~r/\\\[!(.*)\\\]/U, pattern, "[^\\1]")
-    IO.inspect(pattern, label: :replaced_classes1)
-    pattern = Regex.replace(~r/\\\[(.*)\\\]/U, pattern, "[\\1]")
-    IO.inspect(pattern, label: :replaced_classes2)
-    pattern = Regex.replace(~r/\[\](.*)\\\]/, pattern, "[\\]\\1]")
-    IO.inspect(pattern, label: :replaced_classes3)
-    pattern = Regex.replace(~r/\[\](.*)\\\]/, pattern, "[\\]\\1]")
-    pattern = String.replace(pattern, "\\-", "-")
+    pattern =
+      Regex.replace(~r/\\\[(!?.+)\\\]/U, pattern, fn
+        _whole_match, "!" <> rest ->
+          "[^" <> rest <> "]"
+        _whole_match, rest ->
+          "[" <> rest <> "]"
+      end)
 
-    IO.inspect(pattern, label: :replaced_classes)
+    pattern = String.replace(pattern, "\\-", "-")
 
     # Anchor
     pattern = "^" <> pattern <> "$"
-    IO.inspect(pattern, label: :anchored)
 
     # Compile and return
     Regex.compile(pattern, "s")
