@@ -32,7 +32,8 @@ defmodule Wild.MixProject do
 
   defp deps do
     [
-      {:propcheck, "~> 1.2", only: [:dev, :test]},
+      {:propcheck, "~> 1.2", only: [:dev, :test], runtime: false},
+      {:exprof, "~> 0.2.3", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false}
     ]
   end
