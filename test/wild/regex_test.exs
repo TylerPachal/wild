@@ -22,6 +22,7 @@ defmodule Wild.RegexTest do
 
     test ":byte" do
       assert {:ok, ~r/^abc$/s} == Regex.compile_pattern("abc", :byte)
+      assert {:ok, ~r/^[aa\na\[!abc]a.$/s} == Regex.compile_pattern("[aa\na[!abc]a?", :byte)
     end
   end
 
@@ -68,16 +69,20 @@ defmodule Wild.RegexTest do
       assert true == Regex.match?("\\", "\\\\", mode: :codepoint)
       assert false == Regex.match?("\\", "\\", mode: :codepoint)
     end
+
+    test "regressions" do
+      assert false == Regex.match?("[aa\na ad", "[aa\na[!abc]a?", mode: :byte)
+    end
   end
 
   describe "match - property tests" do
-    property "should act the same as bash implementation for bytes" do
+    property "should act the same as bash implementation for mode: :byte" do
       forall {subject, pattern} <- Generators.byte_subject_and_pattern() do
         assert Bash.match?(subject, pattern) == Regex.match?(subject, pattern, mode: :byte)
       end
     end
 
-    property "should act the same as bash implementation for codepoint" do
+    property "should act the same as bash implementation for mode: :codepoint" do
       forall {subject, pattern} <- Generators.codepoint_subject_and_pattern() do
         assert Bash.match?(subject, pattern) == Regex.match?(subject, pattern, mode: :codepoint)
       end

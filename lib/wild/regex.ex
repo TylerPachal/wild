@@ -26,7 +26,7 @@ defmodule Wild.Regex do
     # Note: A closing bracket should be treated literally if it is the first
     # member of a class.
     pattern =
-      Regex.replace(~r/\\\[(!?.+)\\\]/U, pattern, fn
+      Regex.replace(~r/\\\[(!?.+)\\\]/Us, pattern, fn
         _whole_match, "!" <> rest ->
           "[^" <> rest <> "]"
         _whole_match, rest ->
@@ -37,6 +37,7 @@ defmodule Wild.Regex do
       pattern
       |> String.replace("\\*", ".*")
       |> String.replace("\\?", ".")
+      |> String.replace("\\\n", "\n")
       |> String.replace("\\\\", "\\")
       |> String.replace("\\-", "-")
 
