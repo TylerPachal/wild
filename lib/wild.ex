@@ -10,7 +10,7 @@ defmodule Wild do
     - `[a-z]` matches a range of tokens
     - `[!...]` matches anything but a set of tokens
   """
-  alias Wild.{Bash, Byte, Codepoint}
+  alias Wild.{Bash, Byte, Codepoint, Validator}
   require Logger
 
   @doc """
@@ -91,19 +91,23 @@ defmodule Wild do
 
   @doc """
   Checks if the given pattern is a valid unix-style wildcard pattern.  The most
-  common invalid patterns arise because of invalid escape sequences.
+  common invalid patterns arise because of invalid escape sequences.  Mode can
+  be either `:byte` or `:codepoint` (default).
 
   ## Examples
 
       iex> Wild.valid_pattern?("fo[a-z]b?r")
       true
 
-      iex> Wild.valid_pattern?(<<?\\, ?a>>)
+      iex> Wild.valid_pattern?(<<?\\\\, ?a>>)
       false
+
+      iex> Wild.valid_pattern?("hello", :codepoint)
+      true
   """
   @spec valid_pattern?(binary()) :: boolean()
-  def valid_pattern?(pattern) do
-    tokenize_result = Codepoint.tokenize_pattern(pattern)
-    Kernel.match?({:ok, _}, tokenize_result)
+  @spec valid_pattern?(binary(), :byte | :codepoint) :: boolean()
+  def valid_pattern?(pattern, mode \\ :codepoint) do
+    Validator.valid?(pattern, mode)
   end
 end

@@ -1,4 +1,5 @@
-defmodule Wild.Regex do
+defmodule Wild.Engine do
+  @moduledoc false
 
   def match?(subject, pattern, opts) do
     mode = Keyword.fetch!(opts, :mode)
@@ -16,6 +17,7 @@ defmodule Wild.Regex do
     end
   end
 
+  # Public for testing
   def compile_pattern(pattern, mode) do
     # Escaped
     pattern = Regex.escape(pattern)

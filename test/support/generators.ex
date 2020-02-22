@@ -123,6 +123,4 @@ end
       :binary.list_to_bin(value)
     end
   end
-
-
 end
