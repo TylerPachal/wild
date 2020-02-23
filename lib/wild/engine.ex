@@ -41,7 +41,11 @@ defmodule Wild.Engine do
       |> String.replace("\\?", ".")
       |> String.replace("\\\n", "\n")
       |> String.replace("\\\\", "\\")
-      |> String.replace("\\-", "-")
+
+    # Only replace dashes that are between two characters.  The characters
+    # should be in asccending order.
+    pattern =
+      Regex.replace(~r/\\-(?!\\-)/, pattern, "-")
 
     # Anchor
     pattern = "^" <> pattern <> "$"

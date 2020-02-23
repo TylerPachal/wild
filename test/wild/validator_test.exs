@@ -25,8 +25,8 @@ defmodule Wild.ValidatorTest do
 
   property "any invalid patterns should evaluate to false in Bash" do
     forall pattern <- Generators.random_pattern() do
-      implies Validator.match?(pattern) == false do
-        assert Bash.match?("hello", pattern) == false
+      implies Validator.valid?(pattern, :codepoint) == false do
+        assert Bash.match?("foo", pattern) == false
       end
     end
   end
