@@ -21,7 +21,7 @@ defmodule Wild.Generators do
   def codepoint_subject_and_pattern() do
     such_that(
       {i, p} <- byte_subject_and_pattern(),
-      when: String.length(i) == byte_size(i) && String.length(p) == byte_size(p)
+      when: String.printable?(i) && String.printable?(p)
     )
   end
 
@@ -123,6 +123,4 @@ end
       :binary.list_to_bin(value)
     end
   end
-
-
 end

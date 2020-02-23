@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Race do
     list = input_data()
 
     Benchee.run(%{
-      "wild" => fn ->
+      "codepoint" => fn ->
         Enum.each(list, fn {s, p} -> Wild.match?(s, p) end)
       end,
       "bash" => fn ->
