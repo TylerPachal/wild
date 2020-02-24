@@ -10,7 +10,7 @@ defmodule Wild do
     - `[a-z]` matches a range of tokens
     - `[!...]` matches anything but a set of tokens
   """
-  alias Wild.{Bash, Byte, Codepoint, Validator}
+  alias Wild.{Bash, Engine, Validator}
   require Logger
 
   @doc """
@@ -84,8 +84,7 @@ defmodule Wild do
     opts = Keyword.put_new(opts, :mode, :codepoint)
     case Keyword.get(opts, :mode) do
       :bash -> Bash.match?(subject, pattern, opts)
-      :byte -> Byte.match?(subject, pattern, opts)
-      :codepoint -> Codepoint.match?(subject, pattern, opts)
+      _ -> Engine.match?(subject, pattern, opts)
     end
   end
 
