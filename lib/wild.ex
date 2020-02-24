@@ -103,10 +103,17 @@ defmodule Wild do
 
       iex> Wild.valid_pattern?("hello", :codepoint)
       true
+
+      iex> Wild.valid_pattern?(123)
+      false
   """
   @spec valid_pattern?(binary()) :: boolean()
   @spec valid_pattern?(binary(), :byte | :codepoint) :: boolean()
-  def valid_pattern?(pattern, mode \\ :codepoint) do
+  def valid_pattern?(pattern, mode \\ :codepoint)
+  def valid_pattern?(pattern, mode) when is_binary(pattern) do
     Validator.valid?(pattern, mode)
+  end
+  def valid_pattern?(_, _) do
+    false
   end
 end
