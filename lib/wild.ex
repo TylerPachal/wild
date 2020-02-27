@@ -1,10 +1,8 @@
 defmodule Wild do
   @moduledoc """
-  Wild is a wildcard matching library that implements unix-style blob pattern
-  matching functionality for Elixir binaries (without actually interacting with
-  the filesystem itself).  It works on all binary input and defaults to working
-  with codepoint representations of binaries, but other modes are also
-  available.
+  A wildcard matching library that implements unix-style blob pattern matching
+  functionality for Elixir binaries.  It works on all binary input and defaults
+  to working with codepoint representations of binaries.
 
   The `match?/3` and `valid_pattern?/1` functions support all of the usual
   wildcard pattern mechanisms:
