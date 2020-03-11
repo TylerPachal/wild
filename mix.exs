@@ -59,6 +59,11 @@ defmodule Wild.MixProject do
   end
 
   defp description do
-    "Wild is a wildcard matching library that mimics unix-style pattern matching functionality in Elixir"
+    """
+    A wildcard matching library that implements unix-style blob pattern
+    matching functionality for Elixir binaries.  It works on all binary input
+    and defaults to working with codepoint representations of binaries, but
+    other modes are also available.
+    """
   end
 end

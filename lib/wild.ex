@@ -1,6 +1,8 @@
 defmodule Wild do
   @moduledoc """
-  Provides the interface to underlying wildcard implementations.
+  A wildcard matching library that implements unix-style blob pattern matching
+  functionality for Elixir binaries.  It works on all binary input and defaults
+  to working with codepoint representations of binaries.
 
   The `match?/3` and `valid_pattern?/1` functions support all of the usual
   wildcard pattern mechanisms:
@@ -14,9 +16,9 @@ defmodule Wild do
   require Logger
 
   @doc """
-  Executes a unix-style wildcard pattern match on a string with a given
-  pattern.  By default it tokenizes and runs on Codepoints but can also be set
-  to Byte mode.
+  Executes a unix-style wildcard blob pattern match on a binary with a given
+  pattern.  By default it tokenizes and runs on `codepoints` but can also be set
+  to `byte` mode.
 
   ## Examples
 
@@ -54,9 +56,9 @@ defmodule Wild do
       false
       ```
 
-      The `:codepoint` mode uses `String.codepoints/1` for tokenization, while
-      the `:byte` mode uses `:binary.bin_to_list/1`.  If we tokenize our `"ā"`
-      subject we can see the two functions produce different amounts of tokens:
+      If we do an example tokenization of our `"ā"` subject we can see that
+      depending on how you treat the binary you can produce different amounts
+      tokens:
       ```
       iex> String.codepoints("ā")
       ["ā"]
