@@ -1,15 +1,15 @@
-name: Elixir CI
-
 on: push
+
+name: Elixir CI
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1.0.0
-      - uses: actions/setup-elixir@v1.1.0
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
         with:
-          otp-version: 21.x
-          elixir-version: 1.7.x
+          otp-version: 22.3
+          elixir-version: 1.8
       - run: mix deps.get
       - run: mix test
