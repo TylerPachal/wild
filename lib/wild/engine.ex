@@ -1,6 +1,12 @@
 defmodule Wild.Engine do
   @moduledoc false
 
+  def match?(subject, pattern, opts)
+
+  # Shortcut for the empty-string pattern, which can only match itself
+  def match?("", "", _opts), do: true
+  def match?(_, "", _opts), do: false
+
   def match?(subject, pattern, opts) do
     mode = Keyword.fetch!(opts, :mode)
     on_pattern_error = Keyword.get(opts, :on_pattern_error) || :fail
@@ -35,15 +41,21 @@ defmodule Wild.Engine do
           "[" <> rest <> "]"
       end)
 
+    # Replace escape tokens
     pattern =
       pattern
       |> String.replace("\\*", ".*")
       |> String.replace("\\?", ".")
       |> String.replace("\\\n", "\n")
-      |> String.replace("\\\\", "\\")
+
+    # Replace escape tokens continued.
+    # A double backslash with a single backslash unless the backslash is
+    # followed by one of the 1-8 bytes.
+    pattern =
+      Regex.replace(~r/\\\\(?!\x01|\x02|\x03|\x04|\x05|\x06|\x07|\x08)/, pattern, "\\")
 
     # Only replace dashes that are between two characters.  The characters
-    # should be in asccending order.
+    # _should_ be in asccending order.
     pattern =
       Regex.replace(~r/\\-(?!\\-)/, pattern, "-")
 

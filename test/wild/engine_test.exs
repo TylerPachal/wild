@@ -73,6 +73,8 @@ defmodule Wild.EngineTest do
     test "regressions" do
       assert false == Engine.match?("[aa\na ad", "[aa\na[!abc]a?", mode: :byte)
       assert true == Engine.match?("bhstw", "*[!-a--]", mode: :codepoint)
+      assert false == Engine.match?("\n", "", mode: :codepoint)
+      assert true == Engine.match?(<<92, 1>>, <<92, 1>>, mode: :byte)
     end
   end
 
