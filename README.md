@@ -15,7 +15,7 @@ Add the `:wild` dependency to your `mix.exs` file:
 ```elixir
 def deps do
   [
-    {:wild, "~> 1.0.0"}
+    {:wild, "~> 1.0.1"}
   ]
 end
 ```
